@@ -1,14 +1,70 @@
-## Spring boot admin to Forum app   
-Simple setup with Spring boot admin, to check my Forum app 
+# Spring Boot Admin do Forum
 
-## How to start the project
-```mvn clean install -DskipTests && mvn spring-boot:run```
+Painel que monitora o app [forum](https://github.com/osmarpetry/forum) (health, logs, metricas via actuator).
+Spring Boot 2.1 + spring-boot-admin-server 2.1 (Java 8). Porta **8081**.
 
-## How to access the started project
-Access in the browser, the following link:
-```http://localhost:8081/#/applications```
+## Rodar com Docker (forum + admin)
 
-## About security 
-Is important to setup security here, in the application (in the other repo.) just for this project has access and here, just for specific people have access to the domain, today is public
+O `docker-compose.yml` fica no repo `forum`. Os 2 repos clonados lado a lado:
 
-Ref: ``https://codecentric.github.io/spring-boot-admin/current/#register-client-applications`` and `https://codecentric.github.io/spring-boot-admin/current/#securing-spring-boot-admin`
+```bash
+git clone https://github.com/osmarpetry/forum.git
+git clone https://github.com/osmarpetry/forum-springbootadmin.git
+cd forum
+docker compose up --build
+```
+
+Abrir: http://localhost:8081
+
+## Rodar so o admin
+
+Com Docker:
+
+```bash
+docker build -t forum-admin . && docker run --rm -p 8081:8081 forum-admin
+```
+
+Sem Docker (Java 8+):
+
+```bash
+./mvnw spring-boot:run
+```
+
+## Criterios de aceite (AC)
+
+1. http://localhost:8081 abre o painel (HTTP 200).
+2. `POST /instances` registra uma aplicacao (HTTP 201).
+3. `GET /instances` lista a aplicacao registrada.
+4. Com o forum rodando, ele aparece no painel com status UP.
+
+## Como testar
+
+Automatico (cobre AC 2 e 3):
+
+```bash
+./mvnw test
+```
+
+Manual, com o admin rodando:
+
+```bash
+curl -s -o /dev/null -w '%{http_code}\n' localhost:8081/
+```
+
+```bash
+curl -s localhost:8081/instances
+```
+
+AC 4: suba o forum (veja o README do repo `forum`) e abra http://localhost:8081.
+
+## Dependabot
+
+- Roda toda semana (`.github/dependabot.yml`).
+- So abre PR de **patch**. Minor e major sao ignorados: Spring Boot e spring-boot-admin-server precisam subir juntos, e isso e manual.
+- PR do dependabot com CI verde faz merge sozinho (`.github/workflows/ci.yml`).
+
+## Seguranca (conhecido)
+
+O painel e publico (sem login). Para producao, ver:
+- https://codecentric.github.io/spring-boot-admin/current/#securing-spring-boot-admin
+- https://codecentric.github.io/spring-boot-admin/current/#register-client-applications
