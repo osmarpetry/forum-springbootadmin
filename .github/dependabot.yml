@@ -5,6 +5,11 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 10
+    # So patch: minor/major quebram (Spring Boot 2.x <-> spring-boot-admin-server 2.x precisam da mesma linha).
+    # Subir de versao e decisao manual.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
     groups:
       maven:
         patterns: ["*"]
