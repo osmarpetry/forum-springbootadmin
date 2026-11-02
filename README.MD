@@ -2,7 +2,12 @@
 Simple setup with Spring boot admin, to check my Forum app 
 
 ## How to start the project
+Needs Java 17+.
+
 ```mvn clean install -DskipTests && mvn spring-boot:run```
+
+With Docker: `docker build -t forum-admin . && docker run -p 8081:8081 forum-admin`.
+To run it together with the forum (and a Cloudflare Tunnel), use the `docker-compose.yml` in the [forum](https://github.com/osmarpetry/forum) repo.
 
 ## How to access the started project
 Access in the browser, the following link:
